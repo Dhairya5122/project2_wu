@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Submit Form</title>
+    <!-- Include SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <!-- Your form and other HTML content here -->
+    <form
+      id="registrationForm"
+      action="http://localhost:3000/register"
+      method="POST"
+    >
+      <label for="name">Username:</label><br />
+      <input type="text" id="username" name="username" /><br />
+
+      <label for="name">Name:</label><br />
+      <input type="text" id="name" name="name" /><br />
+
+      <label for="name">Mobile:</label><br />
+      <input type="text" id="mobile" name="mobile" /><br />
+
+      <label for="email">Email:</label><br />
+      <input type="email" id="email" name="email" /><br /><br />
+
+      <label for="email">Password:</label><br />
+      <input type="password" id="password" name="password" /><br /><br />
+
+      <button type="submit">Submit</button>
+    </form>
+
+    <!-- Set backend URL -->
+
+    <!-- Include your JavaScript file -->
+  </body>
+</html>
