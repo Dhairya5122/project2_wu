@@ -179,28 +179,29 @@
 									<h2 class="title__line--6">Login</h2>
 								</div>
 							</div>
-							<div class="col-xs-12">
-								<form id="contact-form2" action="http://localhost:3000/api/login" method="post">
+						<div class="col-xs-12">
+    <form id="contact-form2" action="http://localhost:3000/api/login" method="post">
 
-									<div class="single-contact-form">
-										<div class="contact-box name">
-											<input type="text" name="email" placeholder="Your Email*" style="width:100%">
-										</div>
-									</div>
-									<div class="single-contact-form">
-										<div class="contact-box name">
-											<input type="text" name="password" placeholder="Your Password*" style="width:100%">
-										</div>
-									</div>
-									
-									<div class="contact-btn">
-										<button type="submit" class="fv-btn">Login</button>
-									</div>
-								</form>
-								<div class="form-output">
-									<p class="form-messege"></p>
-								</div>
-							</div>
+        <div class="single-contact-form">
+            <div class="contact-box name">
+                <input type="text" id="email" name="email" placeholder="Your Email*" style="width:100%">
+            </div>
+        </div>
+        <div class="single-contact-form">
+            <div class="contact-box name">
+                <input type="password" id="password" name="password" placeholder="Your Password*" style="width:100%">
+            </div>
+        </div>
+        
+        <div class="contact-btn">
+            <button type="submit" class="fv-btn">Login</button>
+        </div>
+    </form>
+    <div class="form-output">
+        <p class="form-messege"></p>
+    </div>
+</div>
+
 						</div> 
                 
 				</div>
@@ -426,6 +427,42 @@
     document.querySelector('.form-message').textContent = 'An error occurred. Please try again later.';
   });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.getElementById("contact-form2").addEventListener("submit", async function(event) {
+    event.preventDefault(); // Prevent form submission
+
+    const response = await fetch("http://localhost:3000/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value
+      })
+    });
+
+    const data = await response.json();
+console.log("data", data);
+    if (response.ok) {
+      // If success status code received, show success message
+      Swal.fire({
+        icon: 'success',
+        title: 'Login Successful',
+        text: data.msg
+      });
+    } else {
+      // If error status code received, show error message
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: data.msg
+      });
+    }
+  });
+</script>
+
    
 
 </body>

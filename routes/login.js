@@ -8,7 +8,10 @@ router.post("/login", async (req, res) => {
     // Check if the user exists
     const user = await Register.findOne({ email: req.body.email });
 
+    console.log("User found:", user);
+
     if (!user) {
+      console.log("User not found");
       return res.status(400).json({
         success: false,
         msg: "Please Register your account",
@@ -18,7 +21,10 @@ router.post("/login", async (req, res) => {
 
     // Check if password matches
     const result = req.body.password === user.password;
+    console.log("Password comparison result:", result);
+
     if (!result) {
+      console.log("Password does not match");
       return res.status(400).json({
         success: false,
         msg: "Email or Password Does not Match",
@@ -27,12 +33,16 @@ router.post("/login", async (req, res) => {
     }
 
     // Store user data in session
+
+    // Send a success status code (200)
+    res.status(200).json({
+      success: true,
+      msg: "Login Successful",
+      data: user,
+    });
     req.session.user = user;
 
     console.log("Login Successful", user);
-
-    // Redirect to home page (/)
-    res.redirect("/");
   } catch (error) {
     console.error("Login error:", error);
     return res.status(500).json({
