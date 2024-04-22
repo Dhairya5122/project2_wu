@@ -1,23 +1,22 @@
 const Register = require("../models/registration");
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 
-// Creating New User (Register)
+// Endpoint to register new users
 router.post("/register", async (req, res) => {
   try {
     const { username, name, mobile, email, password } = req.body;
 
-    console.log(req.body);
-
+    // Validate input
     if (!username || !name || !mobile || !email || !password) {
-      // Sending response with error flag
       return res.status(400).json({
         success: false,
-        error: "Please send all data",
+        message: "All fields are required",
       });
     }
 
-    const newRegister = new Register({
+    const newUser = new Register({
       username,
       name,
       mobile,
@@ -25,23 +24,31 @@ router.post("/register", async (req, res) => {
       password,
     });
 
-    await newRegister.save();
-    console.log("success");
-
-    // Sending response with success flag
-    await newRegister.save();
+    await newUser.save();
 
     return res.status(200).json({
       success: true,
       message: "Registration successful",
     });
   } catch (err) {
-    console.log(err);
+    if (err instanceof mongoose.Error.ValidationError) {
+      const errorKeys = Object.keys(err.errors);
+      const duplicateKey = errorKeys.find(
+        (key) => err.errors[key].kind === "unique"
+      );
 
-    // Sending response with error flag
+      if (duplicateKey) {
+        return res.status(400).json({
+          success: false,
+          message: `Duplicate entry for ${duplicateKey}. Please use a different ${duplicateKey}.`,
+        });
+      }
+    }
+
+    console.error(err);
     return res.status(500).json({
       success: false,
-      error: "Internal server error",
+      message: "Internal server error",
     });
   }
 });

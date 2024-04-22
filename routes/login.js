@@ -1,177 +1,64 @@
-const Register = require("../models/registration");
 const express = require("express");
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+const bcrypt = require("bcrypt");
+const Register = require("../models/registration");
+
+dotenv.config();
+const JWT_SECRET = process.env.JWT_SECRET;
+
 const router = express.Router();
 
-// Login endpoint
+// Login endpoint with redirect on success
 router.post("/login", async (req, res) => {
   try {
-    // Check if the user exists
-    const user = await Register.findOne({ email: req.body.email });
+    const { email, password } = req.body;
 
-    console.log("User found:", user);
+    const user = await Register.findOne({ email });
 
     if (!user) {
-      console.log("User not found");
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
-        msg: "Please Register your account",
-        data: {},
+        message: "User not found. Please register first.",
       });
     }
 
-    // Check if password matches
-    const result = req.body.password === user.password;
-    console.log("Password comparison result:", result);
+    const passwordMatch = await bcrypt.compare(password, user.password);
 
-    if (!result) {
-      console.log("Password does not match");
-      return res.status(400).json({
+    if (!passwordMatch) {
+      return res.status(401).json({
         success: false,
-        msg: "Email or Password Does not Match",
-        data: {},
+        message: "Invalid email or password.",
       });
     }
 
-    // Store user data in session
-
-    // Send a success status code (200)
-    res.status(200).json({
-      success: true,
-      msg: "Login Successful",
-      data: user,
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
+      expiresIn: "1h",
     });
+
     req.session.user = user;
 
-    console.log("Login Successful", user);
+    // Redirect to the home page after login
+    return res.redirect("/");
   } catch (error) {
     console.error("Login error:", error);
     return res.status(500).json({
       success: false,
-      msg: "Internal server error",
-      data: {},
+      message: "Internal server error. Please try again later.",
     });
   }
 });
 
-// Check-login endpoint
+// Check-login endpoint to determine if a user is logged in
 router.get("/check-login", (req, res) => {
-  try {
-    if (req.session.user) {
-      res.json({
-        isLoggedIn: true,
-        user: req.session.user,
-      });
-    } else {
-      res.json({
-        isLoggedIn: false,
-      });
-    }
-  } catch (error) {
-    console.error("Check-login error:", error);
-    return res.status(500).json({
-      success: false,
-      msg: "Internal server error",
-      data: {},
+  if (req.session.user) {
+    return res.json({
+      isLoggedIn: true,
+      user: req.session.user,
     });
-  }
-});
-
-//profile
-
-router.get("/user-details", async (req, res) => {
-  console.log("Inside user-details route");
-  try {
-    console.log("User session:", req.session); // Log user session data
-
-    // Check if the user is logged in
-    if (!req.session.user) {
-      return res.status(401).json({
-        success: false,
-        msg: "Unauthorized access",
-        data: {},
-      });
-    }
-
-    // Find the user by their ID
-    const user = await Register.findById(req.session.user._id);
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        msg: "User not found",
-        data: {},
-      });
-    }
-
-    res.json({
-      success: true,
-      data: {
-        name: user.name,
-        email: user.email,
-      },
-    });
-  } catch (error) {
-    console.error("Get user details error:", error);
-    return res.status(500).json({
-      success: false,
-      msg: "Internal server error",
-      data: {},
-    });
-  }
-});
-
-// Update user profile endpoint
-// Update user profile endpoint
-router.put("/update-profile", async (req, res) => {
-  console.log("Inside update-profile route");
-  try {
-    console.log("User session:", req.session); // Log user session data
-
-    // Check if the user is logged in
-    if (!req.session.user) {
-      return res.status(401).json({
-        success: false,
-        msg: "Unauthorized access",
-        data: {},
-      });
-    }
-
-    // Find the user by their ID
-    const user = await Register.findById(req.session.user._id);
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        msg: "User not found",
-        data: {},
-      });
-    }
-
-    // Update user data if provided in the request body
-    if (req.body.name) {
-      user.name = req.body.name;
-    }
-    if (req.body.email) {
-      user.email = req.body.email;
-    }
-
-    // Save the updated user data
-    await user.save();
-
-    res.json({
-      success: true,
-      msg: "Profile updated successfully",
-      data: {
-        name: user.name,
-        email: user.email,
-      },
-    });
-  } catch (error) {
-    console.error("Update user profile error:", error);
-    return res.status(500).json({
-      success: false,
-      msg: "Internal server error",
-      data: {},
+  } else {
+    return res.json({
+      isLoggedIn: false,
     });
   }
 });

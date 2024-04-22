@@ -181,7 +181,6 @@
 							</div>
 						<div class="col-xs-12">
     <form id="contact-form2" action="http://localhost:3000/api/login" method="post">
-
         <div class="single-contact-form">
             <div class="contact-box name">
                 <input type="text" id="email" name="email" placeholder="Your Email*" style="width:100%">
@@ -192,14 +191,13 @@
                 <input type="password" id="password" name="password" placeholder="Your Password*" style="width:100%">
             </div>
         </div>
-        
         <div class="contact-btn">
             <button type="submit" class="fv-btn">Login</button>
         </div>
+        <div class="form-output">
+            <p class="form-message"></p> <!-- Error message placeholder -->
+        </div>
     </form>
-    <div class="form-output">
-        <p class="form-messege"></p>
-    </div>
 </div>
 
 						</div> 
@@ -395,75 +393,62 @@
     <script src="js/main.js"></script>
 
 <script>
-  // Assume you're using JavaScript to handle form submission
+    // JavaScript code to handle form submission with error handling for duplicate entries
+document.addEventListener('DOMContentLoaded', function () {
+  const form = document.querySelector('#contact-form');
 
-  // Assuming you're making a POST request to your server to register the user
-  // Example using fetch API
-  fetch('/register', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(formData), // assuming formData contains the form data
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  })
-  .then(data => {
-    if (data.success) {
-      // If registration is successful, display success message
-      document.querySelector('.form-message').textContent = data.message;
-    } else {
-      // If there's an error, display error message
-      document.querySelector('.form-message').textContent = data.error;
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    // Display error message in case of network errors or server issues
-    document.querySelector('.form-message').textContent = 'An error occurred. Please try again later.';
-  });
-</script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-  document.getElementById("contact-form2").addEventListener("submit", async function(event) {
-    event.preventDefault(); // Prevent form submission
+  if (form) {
+    form.addEventListener('submit', function (event) {
+      event.preventDefault(); // Prevent the default form submission behavior
 
-    const response = await fetch("http://localhost:3000/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email: document.getElementById("email").value,
-        password: document.getElementById("password").value
+      const formData = {
+        username: form.querySelector('input[name="username"]').value,
+        name: form.querySelector('input[name="name"]').value,
+        mobile: form.querySelector('input[name="mobile"]').value,
+        email: form.querySelector('input[name="email"]').value,
+        password: form.querySelector('input[name="password"]').value,
+      };
+
+      fetch('/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       })
-    });
+      .then((response) => response.json())
+      .then((data) => {
+        const messageElement = document.querySelector('.form-message'); // Form output element
 
-    const data = await response.json();
-console.log("data", data);
-    if (response.ok) {
-      // If success status code received, show success message
-      Swal.fire({
-        icon: 'success',
-        title: 'Login Successful',
-        text: data.msg
+        if (data.success) {
+          // If registration is successful, display success message
+          messageElement.textContent = data.message;
+          messageElement.style.color = 'green';
+        } else {
+          // If there's an error, display the error message
+          messageElement.textContent = data.message;
+          messageElement.style.color = 'red';
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        // Display error message for network or server issues
+        const messageElement = document.querySelector('.form-message'); // Form output element
+        messageElement.textContent = 'An error occurred. Please try again later.';
+        messageElement.style.color = 'red';
       });
-    } else {
-      // If error status code received, show error message
-      Swal.fire({
-        icon: 'error',
-        title: 'Login Failed',
-        text: data.msg
-      });
-    }
-  });
+    });
+  }
+});
+
 </script>
+
+
+<!-- login -->
+
 
    
+
 
 </body>
 
