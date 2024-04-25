@@ -21,7 +21,7 @@ const ProductSchema = new Schema({
     type: String,
   },
   instock: {
-    type: Boolean,
+    type: String,
   },
 
   // register: { type: Schema.Types.ObjectId, ref: "registers" },
