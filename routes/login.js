@@ -63,4 +63,46 @@ router.get("/check-login", (req, res) => {
   }
 });
 
+router.get("/users", async (req, res) => {
+  try {
+    const users = await Register.find(); // Fetch all users
+    res.json(users); // Return the list of users
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/users/:userId/toggle", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await Register.findById(userId);
+
+    if (user) {
+      user.status = user.status === "active" ? "inactive" : "active";
+      await user.save();
+      res.json({ status: user.status }); // Return the updated status
+    } else {
+      res.status(404).json({ error: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Delete a user
+router.delete("/users/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await Register.findByIdAndDelete(userId);
+
+    if (user) {
+      res.json({ success: true });
+    } else {
+      res.status(404).json({ error: "User not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = router;
