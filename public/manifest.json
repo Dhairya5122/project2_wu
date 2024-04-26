@@ -1,0 +1,20 @@
+{
+  "name": "Asbab",
+  "short_name": "MyApp",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "./public/views/front/images/logo/4.png",
+      "sizes": "149x43",
+      "type": "image/png"
+    },
+    {
+      "src": "./public/views/front/images/logo/4.png",
+      "sizes": "149x43",
+      "type": "image/png"
+    }
+  ]
+}
