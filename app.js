@@ -1,4 +1,3 @@
-
 const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
@@ -33,6 +32,22 @@ app.use(
   })
 );
 
+app.get("/views/front/images/logo/4.png", (req, res) => {
+  res.sendFile(path.join(__dirname, "views/front/images/logo/4.png"));
+});
+
+app.get("/service-worker-register.js", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/service-worker-register.js"));
+});
+
+app.get("/manifest.json", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/manifest.json"));
+});
+
+app.get("/service-worker.js", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/service-worker.js"));
+});
+
 // Set up middleware for parsing form data
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -42,11 +57,6 @@ app.use("/productdetails", express.static(path.join(__dirname, "views/front")));
 
 // Serve static files for the admin section
 app.use("/admin", express.static(path.join(__dirname, "views/admin")));
-
-// Serve the service worker
-app.get('/sw.js', (req, res) => {
-  res.sendFile(path.join(__dirname, "views/front", "sw.js"));
-});
 
 // Set up view engine
 app.set("views", path.join(__dirname, "views"));

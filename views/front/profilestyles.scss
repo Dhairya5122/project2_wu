@@ -1,0 +1,86 @@
+// Define Sass Variables
+$primary-color: #3498db;
+$secondary-color: #2ecc71;
+$background-color: #f7f7f7;
+$font-family: "Arial, sans-serif";
+$text-color: #333;
+
+// Mixin for button styling
+@mixin button-styles($background-color) {
+  background-color: $background-color;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: darken($background-color, 10%);
+  }
+}
+
+// Global body styling
+body {
+  font-family: $font-family;
+  background-color: $background-color;
+  color: $text-color;
+  margin: 0;
+  padding: 0;
+}
+
+// Profile container
+.profile-container {
+  max-width: 500px;
+  margin: 50px auto; // Center the container
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+  .profile-info {
+    .profile-details {
+      label {
+        display: block; // Labels on new lines
+        margin: 10px 0 5px;
+        font-weight: bold;
+      }
+
+      input {
+        width: 100%; // Full width for inputs
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      button {
+        @include button-styles($primary-color);
+      }
+    }
+  }
+
+  .change-password {
+    margin-top: 20px;
+
+    h3 {
+      color: $primary-color;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      @include button-styles($secondary-color);
+    }
+  }
+}
