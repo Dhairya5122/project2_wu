@@ -14,37 +14,44 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    console.log("Login attempt with email:", email);
+
     const user = await Register.findOne({ email });
 
     if (!user) {
+      console.log("User not found with email:", email); // Debugging user retrieval
       return res.status(401).json({
         success: false,
-        message: "User not found. Please register first.",
+        message: "Invalid email or password",
       });
     }
 
+    // Optional: Log the stored hashed password for verification (only for debugging purposes)
+    console.log("Stored hashed password for user:", user.password);
+
+    // Hash the input password to compare with the stored hash
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
+      console.log("Password mismatch for email:", email); // Password didn't match
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password.",
+        message: "Invalid email or password",
       });
     }
 
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
-      expiresIn: "1h",
-    });
-
     req.session.user = user;
 
-    // Redirect to the home page after login
-    return res.redirect("/");
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user: req.session.user,
+    });
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("Login error:", error); // Debugging unexpected errors
     return res.status(500).json({
       success: false,
-      message: "Internal server error. Please try again later.",
+      message: "Internal server error",
     });
   }
 });
@@ -54,7 +61,7 @@ router.get("/check-login", (req, res) => {
   if (req.session.user) {
     return res.json({
       isLoggedIn: true,
-      user: req.session.user,
+      user: req.session.user, // You can send additional user info if needed
     });
   } else {
     return res.json({
@@ -103,6 +110,23 @@ router.delete("/users/:userId", async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
+});
+
+router.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Logout error:", err);
+      return res.status(500).json({
+        error: "Logout failed. Please try again later.",
+      });
+    }
+
+    res.clearCookie("connect.sid"); // Clear the session cookie
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully.",
+    });
+  });
 });
 
 module.exports = router;

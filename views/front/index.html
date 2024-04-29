@@ -109,10 +109,15 @@
                       <ul class="main__menu">
                         <li class="drop">
                           <span id="username"></span>
-                          <ul class="dropdown">
+                          <!-- Element to display user info -->
+                          <ul class="dropdown" id="menuDropdown">
+                            <!-- This item will be dynamically changed based on login status -->
+                            <li>
+                              <a href="#" id="loginLogoutLink">Loading...</a>
+                            </li>
+                            <!-- Placeholder -->
                             <li><a href="/profile.html">Profile</a></li>
                             <li><a href="#">History</a></li>
-                            <li><a href="#">Logout</a></li>
                           </ul>
                         </li>
                       </ul>
@@ -501,7 +506,7 @@
         const productList = $("#product-list");
 
         // Fetch products from the API
-        $.get("https://localhost:3000/products", (products) => {
+        $.get("http://localhost:3000/products", (products) => {
           // Loop through each product and add it to the product list
           products.forEach((product) => {
             const productItem = `
@@ -541,6 +546,56 @@
             productList.append(productItem);
           });
         });
+      });
+    </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const loginLogoutLink = document.getElementById("loginLogoutLink");
+        const menuDropdown = document.getElementById("menuDropdown");
+
+        // Check login status to determine what text to show
+        fetch("/api/check-login") // Endpoint to check if user is logged in
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.isLoggedIn) {
+              // User is logged in, update text to "Logout"
+              loginLogoutLink.textContent = "Logout";
+              loginLogoutLink.setAttribute("href", "/api/logout"); // Link to logout endpoint
+
+              // Optional: Update the username display
+              const usernameSpan = document.getElementById("username");
+              if (data.user && data.user.username) {
+                usernameSpan.textContent = data.user.username;
+              }
+
+              // Set up logout action with alert
+              loginLogoutLink.addEventListener("click", function (event) {
+                event.preventDefault(); // Prevent default link behavior
+
+                fetch("/api/logout")
+                  .then((response) => response.json())
+                  .then((logoutData) => {
+                    if (logoutData.success) {
+                      alert("Successfully logged out!");
+                      window.location.href = "/login"; // Redirect after logout
+                    } else {
+                      console.error("Logout failed:", logoutData.error);
+                    }
+                  })
+                  .catch((error) => {
+                    console.error("Error during logout:", error);
+                  });
+              });
+            } else {
+              // User is not logged in, update text to "Login"
+              loginLogoutLink.textContent = "Login";
+              loginLogoutLink.setAttribute("href", "/login.html"); // Link to login page
+            }
+          })
+          .catch((error) => {
+            console.error("Error checking login status:", error);
+          });
       });
     </script>
   </body>

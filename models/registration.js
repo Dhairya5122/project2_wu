@@ -37,6 +37,10 @@ const SignupSchema = new Schema(
       type: String,
       default: "active", // Default account status
     },
+    admin: {
+      type: Boolean,
+      default: false, // Only admin accounts are true
+    },
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt

@@ -189,7 +189,7 @@
           const formData = new FormData(productForm); // Collect form data
 
           try {
-            const response = await fetch("https://localhost:3000/products", {
+            const response = await fetch("http://localhost:3000/products", {
               method: "POST",
               body: formData, // Send form data
             });
